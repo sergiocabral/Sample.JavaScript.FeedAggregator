@@ -22,7 +22,7 @@ function fillFeedEntries(feedEntries) {
 
     feedItem.innerHTML = `
       <div class="feed-thumb">
-        <img src="${news.thumb}" alt="${news.title}">
+        <img src="${news.thumb ?? "noimage.jpg"}" alt="${news.title}">
       </div>
       <div class="feed-content">
         <h2 class="feed-title"><a href="${news.link}" target="_blank">${news.title}</a></h2>
