@@ -18,6 +18,12 @@ module.exports = class Application {
   _feeds
 
   /**
+   * Sinaliza se a aplicação finalizou.
+   * @type {boolean}
+   */
+  _terminated
+
+  /**
    * Construtor.
    * @param {Object} param0 Parâmetros de inicialização.
    */
@@ -35,6 +41,7 @@ module.exports = class Application {
     console.debug(this, `Aplicação iniciada.`)
 
     this._webServer.registerRoute('/', this._routeRoot.bind(this), 'GET')
+    this._webServer.registerRoute('/terminate', this._routeTerminate.bind(this), 'GET')
 
     await this._webServer.start()
 
@@ -55,6 +62,16 @@ module.exports = class Application {
   }
 
   /**
+   * Rota Web: Finalizar aplicação
+   * @param {import('express').Request} request Requisição HTTP
+   * @param {import('express').Response} response Resposta HTTP
+   */
+  _routeTerminate(request, response) {
+    this._terminated = true
+    response.send('Aplicação terminada.')
+  }
+
+  /**
    * Ajusta a função nativa `console.debug`.
    */
   _adjustConsoleDebug() {
@@ -70,6 +87,15 @@ module.exports = class Application {
   }
 
   async _waitForEnd() {
-    return new Promise(resolve => {})
+    return new Promise(resolve => {
+      const checkForEnd = () => {
+        if (this._terminated) {
+          resolve()
+        } else {
+          setTimeout(checkForEnd, 1000)
+        }
+      }
+      checkForEnd()
+    })
   }
 }
