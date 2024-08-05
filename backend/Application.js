@@ -31,8 +31,27 @@ module.exports = class Application {
   /**
    * Executar aplicação.
    */
-  run() {
-    console.debug(this, `Estrutura inicial da aplicação.`)
+  async run() {
+    console.debug(this, `Aplicação iniciada.`)
+
+    this._webServer.registerRoute('/', this._routeRoot.bind(this), 'GET')
+
+    await this._webServer.start()
+
+    await this._waitForEnd()
+
+    await this._webServer.stop()
+
+    console.debug(this, `Aplicação finalizada.`)
+  }
+
+  /**
+   * Rota Web: Raiz
+   * @param {import('express').Request} request Requisição HTTP
+   * @param {import('express').Response} response Resposta HTTP
+   */
+  _routeRoot(request, response) {
+    response.send('Hello Feeds!')
   }
 
   /**
@@ -48,5 +67,9 @@ module.exports = class Application {
       }
       consoleDebug(new Date().toISOString(), source, ...args)
     }
+  }
+
+  async _waitForEnd() {
+    return new Promise(resolve => {})
   }
 }
