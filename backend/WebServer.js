@@ -1,4 +1,5 @@
 const express = require('express')
+const cors = require('cors')
 
 /**
  * Servidor Web
@@ -29,6 +30,7 @@ module.exports = class WebServer {
     console.debug(this, `Criação de objeto.`)
     this._port = port
     this._expressInstance = express()
+    this._expressInstance.use(cors({ origin: '*' }))
   }
 
   /**
