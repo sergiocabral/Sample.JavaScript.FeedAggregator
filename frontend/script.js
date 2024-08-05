@@ -1,3 +1,19 @@
+function markAsReadOrDelete(button) {
+  const feedToHideList = []
+
+  const feedItem = button.closest('.feed-item')
+  if (feedItem) {
+    feedToHideList.push(feedItem)
+  } else {
+    feedToHideList.push(...document.querySelectorAll('.feed-item'))
+  }
+
+  feedToHideList.forEach(feedToHide => {
+    console.debug(`Removido item "${feedToHide.querySelector("h2 a").innerHTML}"`)
+    feedToHide.remove()
+  })
+}
+
 async function loadFeedEntries(sourceName) {
   const baseUrl = `${location.protocol}//${location.host}`
   const url = `${baseUrl.startsWith('file:') ? 'http://localhost' : baseUrl}/feed/${sourceName ?? ""}`
@@ -13,6 +29,7 @@ async function loadFeedEntries(sourceName) {
   }
 }
 
+const feedsAlreadyLoaded = []
 function fillFeedEntries(feedEntries) {
   console.debug(`Preenchendo tela com um total de ${feedEntries.length} itens de feed.`)
   const feedContainer = document.querySelector("#feed-container")
@@ -20,20 +37,24 @@ function fillFeedEntries(feedEntries) {
     const feedItem = document.createElement('div')
     feedItem.className = 'feed-item'
 
-    feedItem.innerHTML = `
-      <div class="feed-thumb">
-        <img src="${news.thumb ?? "noimage.jpg"}" alt="${news.title}">
-      </div>
-      <div class="feed-content">
-        <h2 class="feed-title"><a href="${news.link}" target="_blank">${news.title}</a></h2>
-        <div class="feed-source">${news.source}, ${new Date(news.date).toLocaleString()}</div>
-      </div>
-      <div class="feed-actions">
-        <button>✖️</button>
-      </div>
-    `
+    if (!feedsAlreadyLoaded.includes(news.link)) {
+      feedsAlreadyLoaded.push(news.link)
 
-    feedContainer.prepend(feedItem)
+      feedItem.innerHTML = `
+        <div class="feed-thumb">
+          <img src="${news.thumb ?? "noimage.jpg"}" alt="${news.title}">
+        </div>
+        <div class="feed-content">
+          <h2 class="feed-title"><a href="${news.link}" target="_blank">${news.title}</a></h2>
+          <div class="feed-source">${news.source}, ${new Date(news.date).toLocaleString()}</div>
+        </div>
+        <div class="feed-actions">
+          <button onclick="markAsReadOrDelete(this)">✖️</button>
+        </div>
+      `
+
+      feedContainer.prepend(feedItem)
+    }
   })
 }
 
@@ -44,3 +65,6 @@ async function loadNews() {
 }
 
 loadNews()
+
+const oneMinute = 60000
+setInterval(loadNews, oneMinute)
