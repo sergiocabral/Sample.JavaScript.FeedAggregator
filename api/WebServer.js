@@ -34,12 +34,12 @@ module.exports = class WebServer {
   }
 
   /**
-   * Registra uma rota Web.
+   * Registra uma rota Web para tratamento com função.
    * @param {string} route Rota Web
    * @param {function} handler Função para tratamento da rota.
    * @param {string} httpMethod Método HTTP
    */
-  registerRoute(route, handler, httpMethod = 'GET') {
+  registerRouteForHandle(route, handler, httpMethod = 'GET') {
     console.debug(this, `Registrando rota "${route}" para método "${httpMethod}".`)
     const functionName = httpMethod.toLowerCase()
     const functionInstance = this._expressInstance[functionName]
@@ -47,6 +47,16 @@ module.exports = class WebServer {
       console.debug(this, `Requisição da rota "${route}".`)
       handler(...args)
     })
+  }
+
+  /**
+   * Registra uma rota Web que entrega um caminho estaticamente.
+   * @param {string} route Rota Web
+   * @param {string} path Caminho onde estão os arquivos.
+   */
+  registerRouteForPath(route, path) {
+    console.debug(this, `Registrando rota "${route}" para caminho estático "${path}".`)
+    this._expressInstance.use(route, express.static(path))
   }
 
   /**

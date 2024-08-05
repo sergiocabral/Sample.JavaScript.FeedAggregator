@@ -40,10 +40,10 @@ module.exports = class Application {
   async run() {
     console.debug(this, `Aplicação iniciada.`)
 
-    this._webServer.registerRoute('/', this._routeRoot.bind(this), 'GET')
-    this._webServer.registerRoute('/terminate', this._routeTerminate.bind(this), 'GET')
-    this._webServer.registerRoute('/feeds', this._routeFeedsList.bind(this), 'GET')
-    this._webServer.registerRoute('/feed/:sourceName?', this._routeFeedsQuery.bind(this), 'GET')
+    this._webServer.registerRouteForPath('/', __dirname + '/../frontend')
+    this._webServer.registerRouteForHandle('/terminate', this._routeTerminate.bind(this), 'GET')
+    this._webServer.registerRouteForHandle('/feeds', this._routeFeedsList.bind(this), 'GET')
+    this._webServer.registerRouteForHandle('/feed/:sourceName?', this._routeFeedsQuery.bind(this), 'GET')
 
     await this._webServer.start()
 
