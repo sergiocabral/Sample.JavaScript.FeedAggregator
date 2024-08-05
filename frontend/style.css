@@ -2,4 +2,75 @@ body {
   font-family: Arial, sans-serif;
   background-color: #121212;
   color: #e0e0e0;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.feed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.feed-header h1 {
+  width: 100%;
+}
+
+.feed-item {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  align-items: center;
+}
+
+.feed-thumb {
+  flex-shrink: 0;
+  width: 150px;
+  height: 100px;
+  overflow: hidden;
+  margin-right: 20px;
+}
+
+.feed-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.feed-content {
+  flex-grow: 1;
+}
+
+.feed-title {
+  font-size: 1.2em;
+  margin: 0 0 10px;
+}
+
+.feed-title a {
+  text-decoration: none;
+  color: #fff;
+}
+
+.feed-title a:hover {
+  text-decoration: underline;
+}
+
+.feed-source {
+  font-size: 0.8em;
+  color: #666;
+}
+
+.feed-actions {
+  display: flex;
+}
+
+.feed-actions button {
+  padding: 10px;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+  font-size: 1em;
 }
