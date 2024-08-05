@@ -1,4 +1,5 @@
 const fs = require('node:fs')
+const xml2js = require('xml2js')
 
 /**
  * Gerenciador de feeds Atom 2.0
@@ -34,7 +35,40 @@ module.exports = class Feeds {
    * @returns {Object[]}
    */
   async query(sourceName) {
-    return [sourceName]
+    console.debug(this, `Consultando fonte "${sourceName ?? "(todas as fontes)"}".`)
+    const allSources = await this._loadSources(this._sourceFilePath)
+    const sources = sourceName
+      ? allSources.filter(source => source.name.toLowerCase() == sourceName.toLowerCase())
+      : allSources
+
+    const entries = []
+
+    if (sources.length > 0) {
+      for (const source of sources) {
+        for (const entry of await this._queryFeed(source.url)) {
+          entries.push({
+            source: source.name,
+            ...entry,
+          })
+        }
+      }
+
+      entries.sort((itemA, itemB) => {
+        const itemADate = new Date(itemA.date).getTime()
+        const itemBDate = new Date(itemB.date).getTime()
+        if (itemADate < itemBDate) {
+          return -1
+        } else if (itemADate > itemBDate) {
+          return +1
+        } else {
+          return 0
+        }
+      })
+    } else {
+      console.debug(this, `Nenhuma fonte foi encontrada`)
+    }
+
+    return entries
   }
 
   /**
@@ -83,5 +117,63 @@ module.exports = class Feeds {
       }
     }
     return sources;
+  }
+
+  /**
+   * Consulta os itens de um feed.
+   * @param {string} url Url do feed.
+   * @returns {Object[]} Lista de itens do feed.
+   */
+  async _queryFeed(url) {
+    let entries
+
+    try {
+      console.debug(this, `Consultando feed pela url "${url}".`)
+      const response = await fetch(url)
+      const feedContent = await response.text()
+      entries = await this._parseFeedContent(feedContent)
+      console.debug(this, `Um total de ${entries.length} entradas foram recebidas do feed.`)
+    } catch (error) {
+      console.warn(`Não foi possível consultar o feed na url "${url}".`)
+      console.debug(this, `Erro ao consultar o feed na url "${url}": ${error?.message}`, error)
+    }
+
+    return entries ?? []
+  }
+
+  /**
+   * Analisa o conteúdo do feed.
+   * @param {string} sourceFileContent Conteúdo do feed.
+   * @returns {Object[]} Lista de itens do feed.
+   */
+  async _parseFeedContent(feedContent) {
+    console.debug(this, `Analisando conteúdo do feed contendo ${feedContent.length} bytes.`)
+    const feedContentAsJson = await xml2js.parseStringPromise(feedContent)
+
+    let isValidFormat = feedContentAsJson?.rss?.channel?.length > 0 && feedContentAsJson.rss.channel[0].item.length >= 0
+
+    let errorCount = 0
+    const entries = []
+    if (isValidFormat) {
+      for (const item of feedContentAsJson.rss.channel[0].item) {
+        try {
+          entries.push({
+            title: item['title'][0].trim(),
+            date: new Date(item['pubDate'][0].trim()).toISOString(),
+            link: item['link'][0].trim(),
+            thumb: item['media:content'] && item['media:content'][0] && item['media:content'][0]['$'] && item['media:content'][0]['$'].url,
+          })
+        } catch (error) {
+          errorCount++
+          console.debug(this, `Erro ao analisar item do feed: ${JSON.stringify(item)}`, error)
+        }
+      }
+    }
+
+    if (errorCount) {
+      console.warn(`Ocorreram ${errorCount} erro(s) ao analisar o feed.`)
+    }
+
+    return entries
   }
 }
