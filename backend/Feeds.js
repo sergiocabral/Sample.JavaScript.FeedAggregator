@@ -16,4 +16,21 @@ module.exports = class Feeds {
     console.debug(this, `Criação de objeto.`)
     this._sourceFilePath = sourceFilePath
   }
+
+  /**
+   * Listar as fontes de feed.
+   * @returns {string[]}
+   */
+  async list() {
+    return '(vazio)'
+  }
+
+  /**
+   * Consultar feed
+   * @param {string|undefined} sourceName Nome da fonte do feed.
+   * @returns {Object[]}
+   */
+  async query(sourceName) {
+    return [sourceName]
+  }
 }

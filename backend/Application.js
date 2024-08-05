@@ -42,6 +42,8 @@ module.exports = class Application {
 
     this._webServer.registerRoute('/', this._routeRoot.bind(this), 'GET')
     this._webServer.registerRoute('/terminate', this._routeTerminate.bind(this), 'GET')
+    this._webServer.registerRoute('/feeds', this._routeFeedsList.bind(this), 'GET')
+    this._webServer.registerRoute('/feed/:sourceName?', this._routeFeedsQuery.bind(this), 'GET')
 
     await this._webServer.start()
 
@@ -69,6 +71,25 @@ module.exports = class Application {
   _routeTerminate(request, response) {
     this._terminated = true
     response.send('Aplicação terminada.')
+  }
+
+  /**
+   * Rota Web: Lista fontes de feeds
+   * @param {import('express').Request} request Requisição HTTP
+   * @param {import('express').Response} response Resposta HTTP
+   */
+  async _routeFeedsList(request, response) {
+    response.json(await this._feeds.list())
+  }
+
+  /**
+   * Rota Web: Consultar fonte de feed
+   * @param {import('express').Request} request Requisição HTTP
+   * @param {import('express').Response} response Resposta HTTP
+   */
+  async _routeFeedsQuery(request, response) {
+    const sourceName = request.params.sourceName;
+    response.json(await this._feeds.query(sourceName))
   }
 
   /**
