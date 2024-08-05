@@ -1,5 +1,6 @@
 const fs = require('node:fs')
 const xml2js = require('xml2js')
+const Cache = require('./Cache.js')
 
 /**
  * Gerenciador de feeds Atom 2.0
@@ -10,6 +11,12 @@ module.exports = class Feeds {
    * @type {string}
    */
   _sourceFilePath
+
+  /**
+   * Cache.
+   * @type {Cache}
+   */
+  _cache = new Cache()
 
   /**
    * Construtor.
@@ -77,13 +84,18 @@ module.exports = class Feeds {
    * @returns {Object[]} Lista de fontes.
    */
   async _loadSources(filePath) {
-    let sources
+    const cacheKey = `_loadSources#${filePath}`
+    let sources = this._cache.get(cacheKey)
+    if (sources) {
+      return sources
+    }
 
     console.debug(this, `Tentando carregar os dados do arquivo "${filePath}".`)
     if (fs.existsSync(filePath)) {
       try {
         const fileContent = fs.readFileSync(filePath).toString()
         sources = this._parseSourceFileContent(fileContent)
+        this._cache.put(cacheKey, sources)
         console.debug(this, `Um total de ${sources.length} fontes de feeds foram recebidas.`)
       } catch (error) {
         console.warn(`Não foi possível ler o conteúdo do arquivo "${filePath}".`)
@@ -125,13 +137,18 @@ module.exports = class Feeds {
    * @returns {Object[]} Lista de itens do feed.
    */
   async _queryFeed(url) {
-    let entries
+    const cacheKey = `_queryFeed#${url}`
+    let entries = this._cache.get(cacheKey)
+    if (entries) {
+      return entries
+    }
 
     try {
       console.debug(this, `Consultando feed pela url "${url}".`)
       const response = await fetch(url)
       const feedContent = await response.text()
       entries = await this._parseFeedContent(feedContent)
+      this._cache.put(cacheKey, entries)
       console.debug(this, `Um total de ${entries.length} entradas foram recebidas do feed.`)
     } catch (error) {
       console.warn(`Não foi possível consultar o feed na url "${url}".`)
