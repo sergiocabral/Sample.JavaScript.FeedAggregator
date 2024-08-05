@@ -1,4 +1,13 @@
 {
+  "name": "feed-aggregator",
+  "version": "1.0.0",
+  "description": "A simple application that aggregates and displays news from a set of feeds listed in a configuration file.",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js"
+  },
+  "author": "Sergio Cabral",
+  "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
