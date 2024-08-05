@@ -13,6 +13,7 @@ module.exports = class WebServer {
    * @param {number} port Porta do serviço HTTP.
    */
   constructor(port) {
+    console.debug(this, `Criação de objeto.`)
     this._port = port
   }
 }

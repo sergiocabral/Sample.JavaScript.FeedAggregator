@@ -13,6 +13,7 @@ module.exports = class Feeds {
    * @param {string} sourceFilePath Caminho do arquivo fonte de dados dos feeds.
    */
   constructor(sourceFilePath) {
+    console.debug(this, `Criação de objeto.`)
     this._sourceFilePath = sourceFilePath
   }
 }
