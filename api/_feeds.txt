@@ -1,5 +1,5 @@
-G1              : https://g1.globo.com/rss/g1/
-New York Times  : https://rss.nytimes.com/services/xml/rss/nyt/World.xml
-BBC Brasil      : http://www.bbc.co.uk/portuguese/index.xml
-Agência Brasil  : https://agenciabrasil.ebc.com.br/rss/ultimasnoticias/feed.xml
-CBN             : https://www1.cbn.com/rss-cbn-articles-cbnnews.xml
+“Have I Been Pwned” (HIBP)  : https://haveibeenpwned.com/feed/breaches/
+UpGuard                     : https://www.upguard.com/breaches/rss.xml
+IT Pro                      : https://www.itpro.com/feeds/tag/data-breaches
+Krebs on Security           : https://krebsonsecurity.com/category/data-breaches/feed/
+Current Scams               : https://currentscams.com/index.php/feed/
